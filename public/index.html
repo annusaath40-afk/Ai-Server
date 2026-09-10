@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini AI</title>
+</head>
+
+<body>
+  <h1>🤖 Mini AI</h1>
+
+  <input id="message" placeholder="Ask anything..." />
+  <button onclick="sendMessage()">Send</button>
+
+  <p id="status"></p>
+  <div id="reply"></div>
+
+  <script>
+    async function sendMessage() {
+      const message = document.getElementById("message").value;
+      const reply = document.getElementById("reply");
+      const status = document.getElementById("status");
+
+      if (!message) return;
+
+      status.textContent = "Thinking...";
+      reply.textContent = "";
+
+      try {
+        const response = await fetch("/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            message: message
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Request failed");
+        }
+
+        reply.textContent = data.reply;
+        status.textContent = "";
+
+      } catch (error) {
+        status.textContent = "Error: " + error.message;
+      }
+    }
+  </script>
+</body>
+</html>
